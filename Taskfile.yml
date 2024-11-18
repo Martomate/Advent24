@@ -1,0 +1,8 @@
+version: '3'
+
+tasks:
+  d1:
+    dir: days/d01
+    cmds:
+      - echo "Hello World"
+      - pwd

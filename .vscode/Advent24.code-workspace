@@ -5,6 +5,14 @@
 			"path": ".."
 		},
 		{
+			"name": "Samples",
+			"path": "../samples"
+		},
+		{
+			"name": "Inputs",
+			"path": "../inputs"
+		},
+		{
 			"name": "Day 1",
 			"path": "../days/d01"
 		},
