@@ -1,0 +1,49 @@
+{
+	"folders": [
+		{
+			"name": "Main",
+			"path": ".."
+		},
+		{
+			"name": "Day 1",
+			"path": "../days/d01"
+		},
+		{
+			"name": "Day 2",
+			"path": "../days/d02"
+		},
+		{
+			"name": "Day 3",
+			"path": "../days/d03"
+		},
+		{
+			"name": "Day 4",
+			"path": "../days/d04"
+		},
+		{
+			"name": "Day 5",
+			"path": "../days/d05"
+		},
+		{
+			"name": "Day 6",
+			"path": "../days/d06"
+		},
+		{
+			"name": "Day 7",
+			"path": "../days/d07"
+		},
+		{
+			"name": "Day 8",
+			"path": "../days/d08"
+		},
+		{
+			"name": "Day 9",
+			"path": "../days/d09"
+		},
+		{
+			"name": "Day 10",
+			"path": "../days/d10"
+		},
+	],
+	"settings": {}
+}
