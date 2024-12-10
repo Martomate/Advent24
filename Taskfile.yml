@@ -1,8 +1,57 @@
 version: '3'
 
+vars:
+  ROC_INSTALL_FOLDER: "./.bin/roc"
+
+  SAMPLES: "../../samples"
+  INPUTS: "../../inputs"
+
 tasks:
+  # ---- days ----
+
   d1:
     dir: days/d01
     cmds:
-      - echo "Hello World"
-      - pwd
+      - defer: rm main
+      - "roc build main.roc"
+      - task: run-day
+        vars: { RUN: "./main", DAY: "01" }
+
+
+
+
+  # ---- utils ----
+
+  build:
+    silent: true
+    cmds:
+      - "cd runner; cargo build -r"
+      - "cp ./runner/target/release/runner ./.bin/advent"
+
+  run-day:
+    silent: true
+    requires:
+      vars: [RUN, DAY]
+    vars:
+      SAMPLE_DIRS:
+        sh: find -d --name "{{ .SAMPLES }}/d{{ .DAY }}*"
+    cmds:
+      - cmd: "cd days/d{{ .DAY }}; {{ .RUN }} < {{ .SAMPLE_DIR }}/in1.txt | diff - {{ .SAMPLE_DIR }}/out1.txt"
+        for:
+          var: SAMPLE_DIRS
+          as: SAMPLE_DIR          
+      - "cd days/d{{ .DAY }}; {{ .RUN }} < {{ .INPUTS }}/d{{ .DAY }}/in.txt | diff - {{ .INPUTS }}/d{{ .DAY }}/out.txt"
+
+
+  install-roc:
+    cmds:
+      - curl -OL https://github.com/roc-lang/roc/releases/download/nightly/roc_nightly-macos_apple_silicon-latest.tar.gz
+      - tar xf roc_nightly-macos_apple_silicon-latest.tar.gz
+      - rm roc_nightly-macos_apple_silicon-latest.tar.gz
+      - rm -rf {{ .ROC_INSTALL_FOLDER }}
+      - mkdir {{ .ROC_INSTALL_FOLDER }}
+      - mv roc_nightly-macos_apple_silicon-*/* {{ .ROC_INSTALL_FOLDER }}
+      - rm -d roc_nightly-macos_apple_silicon-*
+
+  roc-help:
+    cmd: "{{ .ROC }} help"

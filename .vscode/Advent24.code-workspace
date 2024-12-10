@@ -5,6 +5,10 @@
 			"path": ".."
 		},
 		{
+			"name": "Runner",
+			"path": "../runner"
+		},
+		{
 			"name": "Samples",
 			"path": "../samples"
 		},
