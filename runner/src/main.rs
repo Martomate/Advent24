@@ -8,6 +8,7 @@ use std::{
 
 use anyhow::{bail, Context};
 use clap::Parser;
+use colored::Colorize;
 
 #[derive(Parser, Debug)]
 #[command()]
@@ -29,23 +30,30 @@ fn main() -> anyhow::Result<()> {
             )?;
 
             TemporaryArtifact::defer_deletion(PathBuf::from("./days/d01/main"), || {
-                let success = run_program(
-                    Command::new("./main").current_dir("days/d01"),
-                    &PathBuf::from("samples/d01/in.txt"),
-                    &PathBuf::from("samples/d01/out.txt"),
-                )?;
-                if !success {
-                    bail!("sample failed");
-                }
-    
-                let success = run_program(
-                    Command::new("./main").current_dir("days/d01"),
-                    &PathBuf::from("inputs/d01/in.txt"),
-                    &PathBuf::from("inputs/d01/out.txt"),
-                )?;
-                if !success {
-                    bail!("main test case failed");
-                }
+                println!();
+                run_test_case(1, "samples/d01", &mut Command::new("./main"))?;
+                run_test_case(1, "inputs/d01", &mut Command::new("./main"))?;
+                println!();
+                Ok(())
+            })?;
+        }
+
+        2 => {
+            build(Command::new("gleam").arg("test").current_dir("days/d02"))?;
+            build(Command::new("gleam").arg("build").current_dir("days/d02"))?;
+            build(
+                Command::new("gleam")
+                    .arg("run")
+                    .arg("-m")
+                    .arg("gleescript")
+                    .current_dir("days/d02"),
+            )?;
+
+            TemporaryArtifact::defer_deletion(PathBuf::from("./days/d02/d2"), || {
+                println!();
+                run_test_case(2, "samples/d02", &mut Command::new("./d2"))?;
+                run_test_case(2, "inputs/d02", &mut Command::new("./d2"))?;
+                println!();
                 Ok(())
             })?;
         }
@@ -61,7 +69,10 @@ struct TemporaryArtifact {
 }
 
 impl TemporaryArtifact {
-    fn defer_deletion<T>(path: PathBuf, use_artifact: impl FnOnce() -> anyhow::Result<T>) -> anyhow::Result<T> {
+    fn defer_deletion<T>(
+        path: PathBuf,
+        use_artifact: impl FnOnce() -> anyhow::Result<T>,
+    ) -> anyhow::Result<T> {
         let artifact = TemporaryArtifact { path };
         let res = use_artifact();
         drop(artifact);
@@ -71,23 +82,41 @@ impl TemporaryArtifact {
 
 impl Drop for TemporaryArtifact {
     fn drop(&mut self) {
-        println!("Removing file at {:?}", self.path.as_path());
+        println!(
+            "{}",
+            format!("Removing file at {:?}", self.path.as_path()).bright_black()
+        );
         fs::remove_file(&self.path).unwrap();
     }
 }
 
 fn build(cmd: &mut Command) -> anyhow::Result<()> {
+    print_cmd(cmd);
     let out = cmd
         .stdout(Stdio::piped())
         .output()
         .context("could not run build command")?;
 
     if !out.status.success() {
+        println!("{}", "Command failed to run. Output:\n".red());
         println!("{}", String::from_utf8_lossy(&out.stdout));
         eprintln!("{}", String::from_utf8_lossy(&out.stderr));
         bail!("build failed");
     }
 
+    Ok(())
+}
+
+fn run_test_case(day: u8, test_dir: &str, cmd: &mut Command) -> anyhow::Result<()> {
+    let success = run_program(
+        cmd.current_dir(format!("days/d{:02}", day)),
+        &PathBuf::from(format!("{}/in.txt", test_dir)),
+        &PathBuf::from(format!("{}/out.txt", test_dir)),
+    )
+    .context("failed to run test case")?;
+    if !success {
+        bail!("test case failed: {}", test_dir);
+    }
     Ok(())
 }
 
@@ -104,6 +133,7 @@ fn run_program(cmd: &mut Command, sample_in: &Path, sample_out: &Path) -> anyhow
         .read_to_end(&mut out_bytes)
         .context("failed to read expectation file")?;
 
+    print_cmd(cmd);
     let mut proc = cmd
         .stdout(Stdio::piped())
         .stdin(Stdio::piped())
@@ -117,9 +147,7 @@ fn run_program(cmd: &mut Command, sample_in: &Path, sample_out: &Path) -> anyhow
             .expect("failed to write to stdin");
     });
 
-    let out = proc
-        .wait_with_output()
-        .context("could not read stdout")?;
+    let out = proc.wait_with_output().context("could not read stdout")?;
 
     if !out.status.success() {
         bail!(String::from_utf8_lossy(&out.stderr).to_string());
@@ -133,13 +161,19 @@ fn run_program(cmd: &mut Command, sample_in: &Path, sample_out: &Path) -> anyhow
     let actual = program_output.trim();
     if expected != actual {
         eprintln!();
-        eprintln!("The output was not correct.\n");
-        eprintln!("Expected:\n{}\n", expected);
+        eprintln!("{}", "The output was not correct.".red());
+        eprintln!();
         eprintln!("Actual:\n{}", actual);
+        eprintln!();
+        eprintln!("Expected:\n{}", expected);
         eprintln!();
 
         Ok(false)
     } else {
         Ok(true)
     }
+}
+
+fn print_cmd(cmd: &Command) {
+    println!("{}", format!("Running: {:?}", cmd).bright_black());
 }
