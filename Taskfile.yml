@@ -1,43 +1,36 @@
 version: '3'
 
-vars:
-  ROC_INSTALL_FOLDER: "./.bin/roc"
-
-  SAMPLES: "../../samples"
-  INPUTS: "../../inputs"
-
 tasks:
-  # ---- days ----
-
-  d1:
-    dir: days/d01
-    cmds:
-      - defer: rm main
-      - "roc build main.roc"
-      - task: run-day
-        vars: { RUN: "./main", DAY: "01" }
-
-
-
-
-  # ---- utils ----
+  run:
+    desc: Run as "task run -- -d <day>"
+    deps:
+      - build
+    cmd: advent {{ .CLI_ARGS }}
 
   build:
     silent: true
+    sources:
+      - ./runner/src/**/*
     cmds:
       - "cd runner; cargo build -r"
       - "cp ./runner/target/release/runner ./.bin/advent"
+
+  # ---- INSTALLATION ----
 
   install-roc:
     cmds:
       - curl -OL https://github.com/roc-lang/roc/releases/download/nightly/roc_nightly-macos_apple_silicon-latest.tar.gz
       - tar xf roc_nightly-macos_apple_silicon-latest.tar.gz
       - rm roc_nightly-macos_apple_silicon-latest.tar.gz
-      - rm -rf {{ .ROC_INSTALL_FOLDER }}
-      - mkdir {{ .ROC_INSTALL_FOLDER }}
-      - mv roc_nightly-macos_apple_silicon-*/* {{ .ROC_INSTALL_FOLDER }}
+      - rm -rf ./.bin/roc
+      - mkdir ./.bin/roc
+      - mv roc_nightly-macos_apple_silicon-*/* ./.bin/roc
       - rm -d roc_nightly-macos_apple_silicon-*
 
   install-gleam:
     cmds:
       - brew install gleam # will install both Gleam and Erlang
+
+  install-elixir:
+    cmds:
+      - brew install elixir

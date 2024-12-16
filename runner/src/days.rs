@@ -25,6 +25,17 @@ pub fn run(day: u8) -> anyhow::Result<()> {
             })?;
         }
 
+        3 => {
+            p.run_build_steps([Program::new("elixirc").with_args(["main.ex"])])?;
+
+            p.defer_deletion("Elixir.D3.beam", || {
+                p.run_tests(
+                    Program::new("elixir").with_args(["-e", "D3.run"]),
+                    ["samples/d03", "inputs/d03"],
+                )
+            })?;
+        }
+
         d => bail!("day {d} is not supported yet"),
     };
 
