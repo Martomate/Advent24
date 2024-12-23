@@ -34,3 +34,9 @@ tasks:
   install-elixir:
     cmds:
       - brew install elixir
+
+  install-ocaml:
+    cmds:
+      - brew install opam # OCaml package manager
+      - opam init
+      - opam install ocaml-lsp-server ocamlformat

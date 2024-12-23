@@ -36,6 +36,20 @@ pub fn run(day: u8) -> anyhow::Result<()> {
             })?;
         }
 
+        4 => {
+            p.run_build_steps([
+                Program::new("dune").with_args(["test"]),
+                Program::new("dune").with_args(["build"]),
+            ])?;
+
+            let bin_path = "./_build/default/bin/main.exe"; // they call it "exe" on all platforms
+
+            p.run_tests(
+                Program::new(bin_path),
+                ["samples/d04", "inputs/d04"],
+            )?;
+        }
+
         d => bail!("day {d} is not supported yet"),
     };
 

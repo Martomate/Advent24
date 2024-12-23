@@ -57,5 +57,10 @@
 			"path": "../days/d10"
 		},
 	],
-	"settings": {}
+	"settings": {
+		"ocaml.sandbox": {
+			"kind": "custom",
+			"template": "opam exec --switch=default --set-switch -- $prog $args"
+		}
+	}
 }

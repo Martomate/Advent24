@@ -1,0 +1,4 @@
+(library
+ (name d4)
+ (inline_tests)
+ (preprocess (pps ppx_inline_test)))
