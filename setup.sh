@@ -1,2 +1,4 @@
-export PATH=$PATH:$(pwd)/.bin
-export PATH=$PATH:$(pwd)/.bin/roc
+SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+
+export PATH=$PATH:$SCRIPTPATH/.bin
+export PATH=$PATH:$SCRIPTPATH/.bin/roc

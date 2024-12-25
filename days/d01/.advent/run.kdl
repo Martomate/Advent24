@@ -1,0 +1,9 @@
+build {
+    run roc build main.roc
+}
+clean {
+    delete main
+}
+test {
+    run "./main"
+}

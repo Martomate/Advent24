@@ -1,0 +1,11 @@
+build {
+    run gleam test
+    run gleam build
+    run gleam run -m gleescript
+}
+clean {
+    delete d2
+}
+test {
+    run "./d2"
+}

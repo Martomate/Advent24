@@ -1,0 +1,9 @@
+build {
+    run elixirc main.ex
+}
+clean {
+    delete Elixir.D3.beam
+}
+test {
+    run elixir -e D3.run
+}

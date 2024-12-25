@@ -1,5 +1,6 @@
 use std::process::Command;
 
+#[derive(Debug, Clone, PartialEq)]
 pub struct Program {
     cmd: String,
     args: Vec<String>,

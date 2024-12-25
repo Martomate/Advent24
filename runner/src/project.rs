@@ -1,6 +1,7 @@
 use crate::program::Program;
 
 use std::{
+    collections::HashSet,
     fs::{self, File},
     io::{Read, Write},
     path::{Path, PathBuf},
@@ -12,18 +13,18 @@ use anyhow::{bail, Context};
 use colored::Colorize;
 
 pub struct Project {
-    day: u8,
+    root: PathBuf,
 }
 
 impl Project {
-    pub fn for_day(day: u8) -> Self {
-        Project { day }
+    pub fn at_root(root: PathBuf) -> Self {
+        Project { root }
     }
 
     pub fn run_build_steps(&self, steps: impl IntoIterator<Item = Program>) -> anyhow::Result<()> {
         for step in steps {
             let mut cmd = Command::from(&step);
-            let cmd = cmd.current_dir(format!("days/d{:02}", self.day));
+            let cmd = cmd.current_dir(&self.root);
 
             print_cmd(cmd);
             let out = cmd
@@ -41,37 +42,58 @@ impl Project {
         Ok(())
     }
 
-    pub fn run_tests<D>(&self, program: Program, test_dirs: D) -> anyhow::Result<()>
-    where
-        D: IntoIterator,
-        D::Item: AsRef<str>,
-    {
-        println!();
-        for test_dir in test_dirs {
-            let test_dir = test_dir.as_ref();
-            let success = run_program(
-                Command::from(&program).current_dir(format!("days/d{:02}", self.day)),
-                &PathBuf::from(format!("{}/in.txt", test_dir)),
-                &PathBuf::from(format!("{}/out.txt", test_dir)),
-            )
-            .context("failed to run test case")?;
-            if !success {
-                bail!("test case failed: {}", test_dir);
+    pub fn run_tests(&self, program: Program, test_dir: &Path) -> anyhow::Result<()> {
+        let mut in_files: Vec<String> = Vec::new();
+        let mut out_files: Vec<String> = Vec::new();
+
+        for e in (test_dir.read_dir()?).flatten() {
+            if let Ok(m) = e.metadata() {
+                if m.is_file() {
+                    let file_name = e.file_name().into_string().unwrap();
+                    if let Some(name) = file_name.strip_suffix(".in") {
+                        in_files.push(name.to_string());
+                    } else if let Some(name) = file_name.strip_suffix(".out") {
+                        out_files.push(name.to_string());
+                    } else {
+                        eprintln!("{}", format!("Unexpected testfile: {}", file_name).yellow());
+                    }
+                }
             }
         }
-        println!();
-        Ok(())
-    }
 
-    pub fn defer_deletion<T>(
-        &self,
-        file_name: &str,
-        use_file: impl FnOnce() -> anyhow::Result<T>,
-    ) -> anyhow::Result<T> {
-        TemporaryArtifact::defer_deletion(
-            PathBuf::from(format!("./days/d{:02}/{}", self.day, file_name)),
-            use_file,
-        )
+        let in_files: HashSet<_> = HashSet::from_iter(in_files);
+        let out_files: HashSet<_> = HashSet::from_iter(out_files);
+
+        for name in in_files.difference(&out_files) {
+            eprintln!(
+                "{}",
+                format!("Found '{}.in' but not '{}'.out", name, name).yellow()
+            );
+        }
+        for name in out_files.difference(&in_files) {
+            eprintln!(
+                "{}",
+                format!("Found '{}.out' but not '{}'.in", name, name).yellow()
+            );
+        }
+
+        let test_cases = in_files.intersection(&out_files);
+
+        for name in test_cases {
+            let in_file_name = test_dir.join(format!("{name}.in"));
+            let out_file_name = test_dir.join(format!("{name}.out"));
+
+            let success = run_program(
+                Command::from(&program).current_dir(&self.root),
+                &in_file_name,
+                &out_file_name,
+            )
+            .context("failed to run program")?;
+            if !success {
+                bail!("test case failed: {}", name);
+            }
+        }
+        Ok(())
     }
 }
 

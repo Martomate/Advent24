@@ -1,0 +1,7 @@
+build {
+    run dune test
+    run dune build
+}
+test {
+    run "_build/default/bin/main.exe"
+}

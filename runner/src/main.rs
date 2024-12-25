@@ -1,3 +1,4 @@
+mod config;
 mod days;
 mod program;
 mod project;

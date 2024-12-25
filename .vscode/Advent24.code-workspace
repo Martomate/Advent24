@@ -1,20 +1,8 @@
 {
 	"folders": [
 		{
-			"name": "Main",
-			"path": ".."
-		},
-		{
 			"name": "Runner",
 			"path": "../runner"
-		},
-		{
-			"name": "Samples",
-			"path": "../samples"
-		},
-		{
-			"name": "Inputs",
-			"path": "../inputs"
 		},
 		{
 			"name": "Day 1",
