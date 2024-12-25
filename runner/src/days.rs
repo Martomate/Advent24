@@ -44,7 +44,7 @@ pub fn run(day: u8) -> anyhow::Result<()> {
 }
 
 fn read_config(day: u8) -> Result<(PathBuf, RunConfig), anyhow::Error> {
-    let advent_cfg_path = PathBuf::from(".advent.kdl");
+    let advent_cfg_path = PathBuf::from("advent.kdl");
     let advent_config = read_kdl_file(&advent_cfg_path)
         .and_then(|cfg| AdventConfig::try_from(cfg).context("parsing config"))
         .with_context(|| {
