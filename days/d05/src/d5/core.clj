@@ -1,4 +1,4 @@
-(ns d5
+(ns d5.core
   (:require [java-time.api :as t])
   (:gen-class))
 
@@ -8,6 +8,8 @@
   (t/format
    (t/with-zone (t/formatter "hh:mm a") (t/zone-id))
    instant))
+
+(defn two [] 2)
 
 (defn -main [& _args]
   (println "Hello world! The time is" (time-str (t/instant))))

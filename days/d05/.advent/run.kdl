@@ -1,6 +1,7 @@
 build {
-    run clojure -T:build
+    run lein compile
+    run lein test
 }
 test {
-    run java -jar "./target/d5-0.1.jar"
+    run lein run -m d5.core
 }
