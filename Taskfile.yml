@@ -40,3 +40,7 @@ tasks:
       - brew install opam # OCaml package manager
       - opam init
       - opam install ocaml-lsp-server ocamlformat
+
+  install-clojure:
+    cmds:
+      - brew install clojure/tools/clojure

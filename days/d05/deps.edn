@@ -1,0 +1,17 @@
+{:deps
+ {clojure.java-time/clojure.java-time {:mvn/version "1.4.3"}}
+
+ ; Useful article:
+ ; https://clojure-doc.org/articles/cookbooks/cli_build_projects/
+
+ :paths ["src"]
+ :aliases {:app      {:ns-default d5
+                      :exec-fn main}
+           :test {:extra-paths ["test"]
+                  :extra-deps {io.github.cognitect-labs/test-runner
+                               {:git/tag "v0.5.1" :git/sha "dfb30dd"}}
+                  :exec-fn cognitect.test-runner.api/test}
+           :build {:deps {io.github.clojure/tools.build {:mvn/version "0.10.4"}}
+                   :ns-default build
+                   :exec-fn uber
+                   }}}

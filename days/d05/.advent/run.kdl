@@ -1,0 +1,6 @@
+build {
+    run clojure -T:build
+}
+test {
+    run java -jar "./target/d5-0.1.jar"
+}
