@@ -77,7 +77,8 @@ impl Project {
             );
         }
 
-        let test_cases = in_files.intersection(&out_files);
+        let mut test_cases: Vec<String> = in_files.intersection(&out_files).cloned().collect();
+        test_cases.sort();
 
         for name in test_cases {
             let in_file_name = test_dir.join(format!("{name}.in"));
