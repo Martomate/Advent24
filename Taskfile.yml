@@ -13,7 +13,7 @@ tasks:
       - ./runner/src/**/*
     cmds:
       - "cd runner; cargo build -r"
-      - "cp ./runner/target/release/runner ./.bin/advent"
+      - "cp ./runner/target/release/advent ./.bin/advent"
 
   # ---- INSTALLATION ----
 
