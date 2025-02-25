@@ -91,3 +91,12 @@ The language used per day:
 - The link to Java is just way too strong; sometimes one function returns one kind of list and another function needs another kind of list
 - It's hard to search for "Clojure" online because it means something else
 - The code formatter makes the code inconvenient to work with
+
+### Odin
+- Very cool language with a lot of interesting and useful features!
+- Fast, flexible, expressive
+- Enums are simple but convenient
+- Feels a bit like Go, but nicer
+- Instead of "methods" you have functions in modules (e.g. `list.map(foo, ...)` instead of `foo.map(...)`), which is fine and I can probably get used to it
+- There are lots of cool features left to check out
+- I might actually start using this language in some project

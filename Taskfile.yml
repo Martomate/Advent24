@@ -45,3 +45,7 @@ tasks:
     cmds:
       - brew install clojure/tools/clojure
       - brew install leiningen # build tool
+
+  install-odin:
+    cmds:
+      - brew install odin

@@ -1,0 +1,10 @@
+build {
+    run odin test . // Creates an executable called "d06" which is a "test program". It then runs it.
+    run odin build . -vet // Also creates an executable called "d06" but that one contains the "main" function.
+}
+clean {
+    delete d06
+}
+test {
+    run "./d06"
+}
